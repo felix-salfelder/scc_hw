@@ -1,0 +1,29 @@
+an (incomplete) scconfig hello world project
+
+SYNOPSIS
+
+./bootstrap: create configure (currently needs scconfig/trunk in
+             ../scconfig)
+
+./configure: configure project (does not do much yet.)
+
+make         build project (not implemented)
+
+FILES
+
+bootstrap:    bootstrapping. should some posix shell script
+configure.sc: "site configuration".
+              restricted make file fragment.
+              select desired parts from scconfig
+hooks.c:      "build configuration"
+              plain (ansi) C file
+              tell scconfig what to configure, and how.
+Makefile.in   instructions for Makefile creation
+scconfig.gmk  gnu makefile implementing the bootstrap
+              meant to be part of scconfig (under construction)
+
+TODO
+
+- make dist: create portable tarball witout gnu-make dependency
+- editing hooks.c should trigger bootstrap (?)
+- too incomplete to tell

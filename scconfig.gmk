@@ -1,0 +1,52 @@
+#!/usr/bin/make -f
+#
+# copyright 2016 Felix Salfelder
+# this is licensed under the GNU GPL v3 license.
+#
+# scconfig.mk
+# bootstrap scconfig using gnu make
+#
+# --- default configuration part --
+USER_CFLAGS=-Wall -g -DGENCALL
+USER_LDFLAGS=
+USER_OBJS=
+SCC_CONFIGURE=configure
+BIN = src
+# --- user configuration part --
+include configure.sc
+
+all: $(SCC_CONFIGURE)
+
+## FIXME: unhardcode. later
+SRC = ../scconfig/src
+
+PLUGINS = ${SCC_PLUGINS:%=$(SRC)/%/Makefile.plugin}
+DIRS = ${SCC_PLUGINS:%=$(BIN)/%}
+include $(PLUGINS)
+
+# HACK (bug in tmpasm/Makefile.plugin?)
+DIRS += $(BIN)/generator
+
+# --- you shouldn't edit the lines below ---
+OBJS = $(USER_OBJS) hooks.o $(DEFAULT_NOMAIN_OBJS) $(SCRIPT_OBJS) $(PARSER_OBJS) $(GENERATOR_OBJS) $(TMPASM_OBJS) $(C99_OBJS) $(PARSGEN_OBJS) $(MATH_OBJS) $(SOCKET_OBJS) $(USERPASS_OBJS) $(GUI_OBJS) $(SUL_OBJS)
+CFLAGS = $(USER_CFLAGS) $(DEFAULT_CFLAGS) $(SCRIPT_CFLAGS) $(PARSER_CFLAGS) $(GENERATOR_CFLAGS) $(TMPASM_CFLAGS) $(C99_CFLAGS) $(PARSGEN_CFLAGS) $(MATH_CFLAGS) $(SOCKET_CFLAGS) $(USERPASS_CFLAGS) $(GUI_CFLAGS)  $(SUL_CFLAGS) $(MENULIB_CFLAGS) -I$(SRC)/default -I$(SRC)
+LDFLAGS = $(USER_LDFLAGS) $(DEFAULT_LDFLAGS) $(SCRIPT_LDFLAGS) $(PARSER_LDFLAGS) $(GENERATOR_LDFLAGS) $(TMPASM_LDFLAGS) $(C99_LDFLAGS) $(PARSGEN_LDFLAGS) $(MATH_LDFLAGS) $(SOCKET_LDFLAGS) $(USERPASS_LDFLAGS) $(GUI_LDFLAGS) $(SUL_LDFLAGS) $(MENULIB_LDFLAGS)
+
+$(SCC_CONFIGURE): $(OBJS) $(DEFAULT_MAIN_OBJS)
+	$(CC) -o $(SCC_CONFIGURE) $+
+
+$(OBJS): | $(DIRS)
+
+$(DIRS): %:
+	mkdir -p $@
+
+menuconfig: $(OBJS) $(MENULIB_OBJS)
+	$(CC) -o $(SCC_CONFIGURE) $(OBJS) $(MENULIB_OBJS)
+
+clean:
+	rm $(OBJS) $(SCC_CONFIGURE)
+
+debug:
+	@echo OBJS: $(OBJS)
+	@echo PLUGINS: $(PLUGINS)
+

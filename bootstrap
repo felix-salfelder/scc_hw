@@ -1,0 +1,7 @@
+#!/bin/sh -x
+
+#if gmake is available
+./scconfig.gmk $*
+#else
+# scconfig.sh (?)
+#fi
